@@ -15,11 +15,22 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      # Cache para dependencias pub y Flutter SDK
+      - name: Cache Flutter SDK y pub-cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.pub-cache
+            ~/.flutter
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.32.5' 
-          
+
       - name: Install dependencies
         run: flutter pub get
 
