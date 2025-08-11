@@ -34,7 +34,7 @@ class _HelloWidgetState extends State<HelloWidget> {
 
   Future<void> _fetchHello() async {
     final response = await http.get(
-      Uri.parse('http://localhost:8081/api/hello'),
+      Uri.parse('http://10.0.2.2:8082/auth/test'),
     );
     if (response.statusCode == 200) {
       setState(() {

@@ -17,16 +17,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final AuthService _authService = AuthService();
 
-  void _register() {
-    final user = UserModel(
-      name: _nameController.text,
-      email: _emailController.text,
-    );
-
-    _authService.register(user, _passwordController.text);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('Registro exitoso')));
+  void _register() async {
+    try {
+      await _authService.register(
+        _nameController.text.trim(),
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Registro exitoso')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al registrar: ${e.toString()}')),
+      );
+    }
   }
 
   @override

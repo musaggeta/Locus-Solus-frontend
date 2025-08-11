@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:locus_solus_frontend/widgets/custom_button.dart';
 import '../widgets/custom_text_field.dart';
+import '../widgets/custom_button.dart';
 import '../services/auth_service.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final AuthService? authService;
+  const LoginScreen({Key? key, this.authService}) : super(key: key);
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -13,17 +14,33 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final AuthService _authService = AuthService();
+  late final AuthService _authService;
+  bool _loading = false;
 
-  void _login() {
-    final email = _emailController.text;
-    final password = _passwordController.text;
+  @override
+  void initState() {
+    super.initState();
+    _authService = widget.authService ?? AuthService();
+  }
 
-    final success = _authService.login(email, password);
-    final snackBar = SnackBar(
-      content: Text(success ? 'Login exitoso' : 'Credenciales inválidas'),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  Future<void> _login() async {
+    setState(() => _loading = true);
+    try {
+      final resp = await _authService.login(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Login correcto: ${resp['role'] ?? ''}')),
+      );
+      // Navegar al home o guardar token
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error de login: ${e.toString()}')),
+      );
+    } finally {
+      setState(() => _loading = false);
+    }
   }
 
   @override
@@ -42,7 +59,9 @@ class _LoginScreenState extends State<LoginScreen> {
               isPassword: true,
             ),
             const SizedBox(height: 20),
-            CustomButton(label: 'Iniciar Sesión', onPressed: _login),
+            _loading
+                ? const CircularProgressIndicator()
+                : CustomButton(label: 'Iniciar Sesión', onPressed: _login),
           ],
         ),
       ),

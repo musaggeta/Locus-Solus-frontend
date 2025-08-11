@@ -1,6 +1,6 @@
 class UserModel {
-  final String name;
+  final String username;
   final String email;
 
-  UserModel({required this.name, required this.email});
+  UserModel({required this.username, required this.email});
 }

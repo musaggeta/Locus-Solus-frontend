@@ -42,6 +42,7 @@ jobs:
 
   # 2️ Etapa de build (solo si la anterior pasa)
   build:
+    if: startsWith(github.ref, 'refs/heads/release/')
     runs-on: ubuntu-latest
     needs: test
     steps:
